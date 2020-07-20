@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@color/quantum_cyan50"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/place_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Duration:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance:"
+        android:textStyle="bold" />
+
+
+    <CheckBox
+        android:id="@+id/visitedCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Visited" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="horizontal"
+        android:layout_marginLeft="115dp"
+        android:layout_marginRight="50dp">
+
+        <Button
+            android:id="@+id/getDirBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="Directions"
+            android:backgroundTint="@color/quantum_greywhite1000"
+            android:onClick="onMarkerClick"
+            android:textColor="#000000"/>
+
+        <Button
+            android:id="@+id/addToFvtBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_margin="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:onClick="onMarkerClick"
+            android:paddingLeft="10dp"
+            android:textColor="#000"
+            android:backgroundTint="@color/quantum_teal300"
+            android:textColorHighlight="@color/places_text_white_alpha_26"
+            android:text="Mark Favourite"
+            android:textStyle="bold"
+
+            android:layout_marginLeft="10dp" />
+
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,66 +14,86 @@
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
-        <Spinner
-            android:id="@+id/nearByPlaces"
-            android:layout_width="380dp"
-            android:layout_height="35dp"
-            android:entries="@array/nearPlaces"
-            android:gravity="start|left" />
 
-        <Button
-            android:id="@+id/currentLocationBtn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/ic_baseline_person_pin_24" />
+
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/editModeLayout"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:id="@+id/nearByTypeTextInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="5dp"
-        android:orientation="horizontal"
-        android:visibility="gone">
 
-        <CheckBox
-            android:id="@+id/visitedCheckBox"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:hint="Near By Place"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/nearByTypeAutoComplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <RadioGroup
+            android:id="@+id/map_type_radio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:text="Mark Visited"
-            android:textSize="18sp" />
+            android:checkedButton="@id/standard"
+            android:orientation="horizontal"
 
+            >
+
+
+            <RadioButton
+                android:id="@+id/standard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Standard" />
+
+            <RadioButton
+                android:id="@+id/satellite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Satellite" />
+
+            <RadioButton
+                android:id="@+id/terrain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terrain" />
+
+            <RadioButton
+                android:id="@+id/hybrid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hybrid" />
+        </RadioGroup>
         <Button
-            android:id="@+id/updateBtn"
-            android:layout_width="2dp"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:text="Update"
-            android:textSize="18sp" />
+            android:id="@+id/currentLocationBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:text="V"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:orientation="horizontal">
-
-        <Spinner
-            android:id="@+id/mapType"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:entries="@array/mapTypes"
-            android:gravity="center" />
-
-    </LinearLayout>
 
 
     <fragment

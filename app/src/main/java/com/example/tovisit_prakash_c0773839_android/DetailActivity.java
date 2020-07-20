@@ -28,11 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -65,20 +62,23 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, EditPlaceViewInterface, AddPlaceViewInterface {
+public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback, EditPlaceViewInterface, AddPlaceViewInterface {
     private GoogleMap gMap;
 
 
     private static final String TAG = "MAP_VIEW";
     private static final int ZOOM = 13;
 
-    View v;
+     View v;
 
     private static final int RADIUS = 1700;
     private static final int REQUEST_CODE = 100;
 
     private static final long WAIT_TIME = 5L;
     private boolean isVisited = false;
+    CheckBox checkBox;
+    RadioGroup mapTypeRadioGroup;
+
 
     LocationManager locationManager;
     LocationListener locationListener;
@@ -89,11 +89,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Boolean editMode = false;
     AlertDialog markerMenu;
 
-
-   Button currentLocationBtn ;
-
-    RadioGroup mapTypeRadioGroup;
-    AutoCompleteTextView nearByTypePlaceAutoComplete;
+    Place currentPlaceObj;
 
     private String placeName;
     private Object[] dataTransferObj;
@@ -103,70 +99,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        setUpUserInputUI();
-        setTitle("Add Fav Place");
-        // setup map
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        setUpLocationObjs();
-
-    }
-
-    private void setUpUserInputUI(){
-
-        String[] nearByType = new String[] {"Default","Museum","Cafe","Restaurant","Bank","Pharmacy"};
+        setContentView(R.layout.activity_detail);
 
 
-        ArrayAdapter<String> nearByPlaceTypeAdapter =
-                new ArrayAdapter<String>(
-                        MapsActivity.this,
-                        R.layout.dropdown_menu_popup_item,
-                        nearByType);
-        nearByTypePlaceAutoComplete = findViewById(R.id.nearByTypeAutoComplete);
-        nearByTypePlaceAutoComplete.setAdapter(nearByPlaceTypeAdapter);
 
-        nearByTypePlaceAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i > 0){
-                    Boolean isFav = (place != null);
-                    gMap.clear();
-                    if(current != null)
-                    {
-                        current.remove();
-                    }
-                    current = null;
-                    if (isFav)
-                    {
+        Intent intent = getIntent();
+        Place place = (Place) intent.getSerializableExtra("placeObj");
+        if(place != null){
+            setTitle(place.getPlaceName());
+        }
 
-                        CameraPosition cameraPosition = CameraPosition.builder()
-                                .target(new LatLng(place.getLatCord(), place.getLngCord()))
-                                .zoom(ZOOM)
-                                .bearing(0)
-                                .tilt(0)
-                                .build();
-                        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                        gMap.addMarker(new MarkerOptions().position(new LatLng(place.getLatCord(), place.getLngCord()))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin))
-                                .title(place.getPlaceName())).showInfoWindow();
-                        userLocationMarker(currentLocation);
-                    }
-                    else
-                    {
-                        UpadteCamera(currentLocation);
-                    }
-                    String searchPlace = adapterView.getItemAtPosition(i).toString().toLowerCase();
-                    String url = isFav ? getFetchUrl(place.getLatCord(), place.getLngCord(), searchPlace) :
-                            getFetchUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), searchPlace);
-                    dataTransferObj = new Object[2];
-                    dataTransferObj[0] = gMap;
-                    dataTransferObj[1] = url;
-                    PlacesDataFetcher getPlacesData = new PlacesDataFetcher();
-                    getPlacesData.execute(dataTransferObj);
-                }
-            }
-        });
 
         mapTypeRadioGroup = findViewById(R.id.map_type_radio);
         mapTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -194,17 +136,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+        currentPlaceObj = (Place) intent.getSerializableExtra("placeObj");
 
+        // setup map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        setUpLocationObjs();
 
-
-        currentLocationBtn = findViewById(R.id.currentLocationBtn);
-        currentLocationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UpadteCamera(currentLocation);
-            }
-        });
     }
+
+
 
     private void setUpLocationObjs(){
         geocoder = new Geocoder(this, Locale.getDefault());
@@ -295,7 +236,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         userLocationMarker(currentLocation);
 
         Intent i = getIntent();
-        place = (Place) i.getSerializableExtra("PlaceObj");
+        place = (Place) i.getSerializableExtra("placeObj");
 
         if (place != null) {
 
@@ -318,16 +259,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .tilt(0)
                     .build();
             gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        } else {
 
-            UpadteCamera(currentLocation);
-        }
-
-        if (!editMode)
-        {
-            if (favPlace != null) {
-                favPlace.showInfoWindow();
-            }
 
             gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -336,7 +268,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     dataTransferObj = new Object[3];
                     dataTransferObj[0] = gMap;
                     dataTransferObj[1] = getDirectionUrl();
-                    Log.i(TAG, "directionURL: " + getDirectionUrl());
                     dataTransferObj[2] = favPlace.getPosition();
 
                     DirectionDataFetcher getDirectionData = new DirectionDataFetcher();
@@ -365,23 +296,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
 
-            gMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
-            {
-                @Override
-                //Add new marker on long click
-                public void onMapLongClick(LatLng latLng)
-                {
-                    MarkerOptions options = new MarkerOptions().position(latLng)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-                    favPlace = gMap.addMarker(options);
-                    favPlace.setTitle(getAddress(favPlace));
-                    favPlace.showInfoWindow();
-                }
-            });
-
-        }
-        else
-        {
             gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                 @Override
                 public void onMarkerDragStart(Marker marker) { }
@@ -394,21 +308,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 {
 
                     Intent intent = getIntent();
+                    String  newAddress = getAddress(marker);
                     Place oldPlace = (Place) intent.getSerializableExtra("placeObj");
 
                     favPlace = marker;
                     if(oldPlace != null){
                         Place place = new Place(marker.getPosition().latitude, marker.getPosition().longitude,
-                                placeName,isVisited);
+                                newAddress, isVisited);
                         place.setId(oldPlace.getId());
-                        LocalCacheManager.getInstance(MapsActivity.this).updatePlace(MapsActivity.this,place);
+                        LocalCacheManager.getInstance(DetailActivity.this).updatePlace(DetailActivity.this,place);
 
 
                     }
                 }
             });
+        } else {
 
+            UpadteCamera(currentLocation);
         }
+
     }
 
 
@@ -417,10 +335,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         placeName = favPlace.getTitle();
 
         CheckBox checkBox = v.findViewById(R.id.visitedCheckBox);
-        boolean isChecked = checkBox.isChecked();
-        LocalCacheManager.getInstance(this).addPlaces(this,new Place(
-                favPlace.getPosition().latitude, favPlace.getPosition().longitude,placeName, isChecked
-        ));
+
+
+        Place placeUpdated = new Place(
+                favPlace.getPosition().latitude, favPlace.getPosition().longitude,placeName, checkBox.isChecked()
+        );
+        placeUpdated.setId(currentPlaceObj.getId());
+        LocalCacheManager.getInstance(this).updatePlace(this,placeUpdated);
 
     }
 
@@ -487,13 +408,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void showMarkerClickedAlert(String address, String distance, String duration)
     {
-        AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-        v = LayoutInflater.from(MapsActivity.this).inflate(R.layout.marker_data_menu, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(DetailActivity.this);
+        v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.marker_data_menu, null);
         alert.setView(v);
 
         TextView tvPlaceName = v.findViewById(R.id.place_name);
         TextView tvDistance = v.findViewById(R.id.distance);
         TextView tvDuration = v.findViewById(R.id.duration);
+        Button saveBtn = v.findViewById(R.id.addToFvtBtn);
+        CheckBox checkBox = v.findViewById(R.id.visitedCheckBox);
+
+        Intent intent = getIntent();
+        Place place = (Place) intent.getSerializableExtra("placeObj");
+        if(place != null){
+            if(place.getVisited()){
+                checkBox.setChecked(true);
+            }
+        }
+        saveBtn.setText("Update");
 
         tvPlaceName.setText(address);
         tvDistance.setText("Distance: " + distance );
@@ -541,9 +473,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onPlaceUpdated() {
-        Toast.makeText(MapsActivity.this, "Updated", Toast.LENGTH_SHORT).show();
-        Intent mIntent = new Intent(MapsActivity.this, MainActivity.class);
-        startActivity(mIntent);
+        Toast.makeText(DetailActivity.this, "Updated", Toast.LENGTH_SHORT).show();
+
     }
 
     private String getFetchUrl(double lat, double lng, String nearByPlace)
@@ -566,28 +497,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.map_menu,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-        if(id == R.id.editPlace){
-            editMode = !editMode;
-            if(editMode){
-                setUp();
-            }
-            else{
-                setUp();
-            }
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 }

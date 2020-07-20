@@ -3,10 +3,12 @@ package com.example.tovisit_prakash_c0773839_android.database;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity
-public class Place {
+import java.io.Serializable;
 
-    @PrimaryKey
+@Entity
+public class Place implements Serializable {
+
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private Double latCord, lngCord;
     private String placeName;
@@ -14,6 +16,17 @@ public class Place {
 
     public Place(int id, Double latCord, Double lngCord, String placeName, Boolean isVisited) {
         this.id = id;
+        this.latCord = latCord;
+        this.lngCord = lngCord;
+        this.placeName = placeName;
+        this.isVisited = isVisited;
+    }
+
+    public Place(){
+
+    }
+
+    public Place( Double latCord, Double lngCord, String placeName, Boolean isVisited) {
         this.latCord = latCord;
         this.lngCord = lngCord;
         this.placeName = placeName;
