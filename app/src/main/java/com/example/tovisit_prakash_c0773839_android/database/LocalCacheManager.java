@@ -79,7 +79,7 @@ public class LocalCacheManager {
     }
 
 
-    public void updateNote(final EditPlaceViewInterface editPlaceViewInterface, final Place place) {
+    public void updatePlace(final EditPlaceViewInterface editPlaceViewInterface, final Place place) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -105,7 +105,7 @@ public class LocalCacheManager {
     }
 
 
-    public void deleteNote(final DeletePlaceInterface deletePlaceInterface, final Place place) {
+    public void deletePlace(final DeletePlaceInterface deletePlaceInterface, final Place place) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {

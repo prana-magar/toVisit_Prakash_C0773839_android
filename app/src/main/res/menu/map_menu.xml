@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.aby.note_quasars_android.activities.MainActivity">
+    <item android:id="@+id/editPlace"
+        android:title="Edit"
+        app:showAsAction="ifRoom"
+        >
+
+    </item>
+
+
+</menu>
