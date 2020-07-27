@@ -10,6 +10,6 @@
         <item>bank</item>
         <item>pharmacy</item>
     </string-array>
-    <string name="google_map_api_key">AIzaSyDeV-VS8ZP2zzaFzjIgVdBN6r7yoJBAUEE</string>
+    <string name="google_map_api_key"></string>
 
 </resources>
